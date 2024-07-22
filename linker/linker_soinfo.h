@@ -372,6 +372,7 @@ struct soinfo {
                            const char* sym_name, const version_info** vi);
 
 
+  void add_symbols(const std::unordered_map<std::string, void*>& symbols);
   static soinfo * load_empty_library(const char *name);
   static soinfo * load_library(const char *name, const std::unordered_map<std::string, void*>& symbols);
 

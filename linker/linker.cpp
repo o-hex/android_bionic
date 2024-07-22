@@ -2872,22 +2872,28 @@ soinfo * soinfo::load_empty_library(const char *name)
   return NULL;
 }
 
-soinfo *soinfo::load_library(const char *name, const std::unordered_map<std::string, void*>& symbols) {
-  auto lib = load_empty_library(name);
+void soinfo::add_symbols(const std::unordered_map<std::string, void*>& symbols) {
   if(symbols.size()) {
-    // lib->symbols.reserve(symbols.size());
     for (auto&& s : symbols) {
       if(s.second) {
         auto entry = std::make_shared<soinfo::HookEntry>();
-        entry->symbol.st_value = (ElfW(Addr))s.second;
+        entry->symbol.st_value = (ElfW(Addr))s.second - load_bias;
         entry->symbol.st_info = STB_GLOBAL << 4;
         entry->symbol.st_shndx = 1;
-        lib->symbols[s.first] = std::move(entry);
+        this->symbols[s.first] = std::move(entry);
       } else {
         async_safe_format_log(2, "load_library", "Undefined symbol %s", s.first.c_str());
       }
     }
   }
+  if(is_linked()) {
+    relocate(SymbolLookupList(this));
+  }
+}
+
+soinfo *soinfo::load_library(const char *name, const std::unordered_map<std::string, void*>& symbols) {
+  auto lib = load_empty_library(name);
+  lib->add_symbols(symbols);
   return lib;
 }
 

@@ -219,7 +219,7 @@ soinfo::soinfo(android_namespace_t* ns, const char* realpath,
                const struct stat* file_stat, off64_t file_offset,
                int rtld_flags) {
   memset(this, 0, sizeof(*this));
-  new (&symbols) std::unordered_map<std::string, std::shared_ptr<ElfW(Sym)>>();
+  new (&symbols) decltype(symbols)();
 
   if (realpath != nullptr) {
     realpath_ = realpath;

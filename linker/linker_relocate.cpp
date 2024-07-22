@@ -116,8 +116,10 @@ static inline bool lookup_symbol(Relocator& relocator, uint32_t r_sym, const cha
 
   if (*sym == nullptr) {
     if (ELF_ST_BIND(relocator.si_symtab[r_sym].st_info) != STB_WEAK) {
-      DL_ERR("cannot locate symbol \"%s\" referenced by \"%s\"...", sym_name, relocator.si->get_realpath());
-      return false;
+      if(!relocator.si->is_linked()) {
+        DL_ERR("cannot locate symbol \"%s\" referenced by \"%s\"...", sym_name, relocator.si->get_realpath());
+        return false;
+      }
     }
   }
 
@@ -276,20 +278,27 @@ static bool process_relocation_impl(Relocator& relocator, const rel_t& reloc) {
         sym_addr = found_in->resolve_symbol_address(sym);
         if (should_protect_segments && !unprotect_segments()) return false;
       } else if constexpr (IsGeneral) {
-        // A weak reference to an undefined symbol. We typically use a zero symbol address, but
-        // use the relocation base for PC-relative relocations, so that the value written is zero.
-        switch (r_type) {
-#if defined(__x86_64__)
-          case R_X86_64_PC32:
-            sym_addr = reinterpret_cast<ElfW(Addr)>(rel_target);
-            break;
-#elif defined(__i386__)
-          case R_386_PC32:
-            sym_addr = reinterpret_cast<ElfW(Addr)>(rel_target);
-            break;
-#endif
+        if(!relocator.si->is_linked()) {
+          // A weak reference to an undefined symbol. We typically use a zero symbol address, but
+          // use the relocation base for PC-relative relocations, so that the value written is zero.
+          switch (r_type) {
+  #if defined(__x86_64__)
+            case R_X86_64_PC32:
+              sym_addr = reinterpret_cast<ElfW(Addr)>(rel_target);
+              break;
+  #elif defined(__i386__)
+            case R_386_PC32:
+              sym_addr = reinterpret_cast<ElfW(Addr)>(rel_target);
+              break;
+  #endif
+          }
         }
       }
+    }
+  }
+  if(relocator.si->is_linked()) {
+    if(sym_addr == 0) {
+      return true;
     }
   }
 
