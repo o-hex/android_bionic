@@ -16,6 +16,10 @@
 
 #pragma once
 
+#if defined(__ANDROID__)
+#include_next <android/versioning.h>
+#else
+
 // The `annotate` attribute always pulls the annotated (inline) function into the object files, thus
 // we should only annotate headers when we are running versioner.
 #if defined(__BIONIC_VERSIONER)
@@ -47,3 +51,4 @@
 #define __VERSIONER_FORTIFY_INLINE
 
 #endif  // defined(__BIONIC_VERSIONER)
+#endif  // defined(__ANDROID__)

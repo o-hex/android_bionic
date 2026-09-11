@@ -18,7 +18,7 @@
 
 #include "private/CFIShadow.h"
 
-__attribute__((__weak__, visibility("default"))) extern "C" void __loader_cfi_fail(
+__attribute__((__weak__, visibility("hidden"))) extern "C" void __loader_cfi_fail(
     uint64_t CallSiteTypeId, void* Ptr, void* DiagData, void* CallerPc);
 
 // Base address of the CFI shadow. Passed down from the linker in __cfi_init()

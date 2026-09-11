@@ -26,52 +26,52 @@
 
 extern "C" {
 
-__attribute__((__weak__, visibility("default")))
+__attribute__((__weak__, visibility("hidden")))
 void __loader_android_get_LD_LIBRARY_PATH(char* buffer, size_t buffer_size);
 
-__attribute__((__weak__, visibility("default")))
+__attribute__((__weak__, visibility("hidden")))
 void* __loader_dlopen(const char* filename, int flags, const void* caller_addr);
 
-__attribute__((__weak__, visibility("default")))
+__attribute__((__weak__, visibility("hidden")))
 char* __loader_dlerror();
 
-__attribute__((__weak__, visibility("default")))
+__attribute__((__weak__, visibility("hidden")))
 void* __loader_dlsym(void* handle, const char* symbol, const void* caller_addr);
 
-__attribute__((__weak__, visibility("default")))
+__attribute__((__weak__, visibility("hidden")))
 void* __loader_dlvsym(void* handle,
                       const char* symbol,
                       const char* version,
                       const void* caller_addr);
 
-__attribute__((__weak__, visibility("default")))
+__attribute__((__weak__, visibility("hidden")))
 int __loader_dladdr(const void* addr, Dl_info* info);
 
-__attribute__((__weak__, visibility("default")))
+__attribute__((__weak__, visibility("hidden")))
 int __loader_dlclose(void* handle);
 
 #if defined(__arm__)
-__attribute__((__weak__, visibility("default")))
+__attribute__((__weak__, visibility("hidden")))
 _Unwind_Ptr __loader_dl_unwind_find_exidx(_Unwind_Ptr pc, int* pcount);
 #endif
 
-__attribute__((__weak__, visibility("default")))
+__attribute__((__weak__, visibility("hidden")))
 int __loader_dl_iterate_phdr(int (*cb)(struct dl_phdr_info* info, size_t size, void* data),
                              void* data);
 
-__attribute__((__weak__, visibility("default")))
+__attribute__((__weak__, visibility("hidden")))
 void __loader_android_get_LD_LIBRARY_PATH(char* buffer, size_t buffer_size);
 
-__attribute__((__weak__, visibility("default")))
+__attribute__((__weak__, visibility("hidden")))
 void __loader_android_update_LD_LIBRARY_PATH(const char* ld_library_path);
 
-__attribute__((__weak__, visibility("default")))
+__attribute__((__weak__, visibility("hidden")))
 void* __loader_android_dlopen_ext(const char* filename,
                                   int flag,
                                   const android_dlextinfo* extinfo,
                                   const void* caller_addr);
 
-__attribute__((__weak__, visibility("default")))
+__attribute__((__weak__, visibility("hidden")))
 int __loader_android_get_application_target_sdk_version();
 
 // Proxy calls to bionic loader

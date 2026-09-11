@@ -43,7 +43,7 @@
 // #include "private/bionic_tls.h"
 #include "private/ScopedPthreadMutexLocker.h"
 
-#define __LINKER_PUBLIC__ __attribute__((visibility("default")))
+#define __LINKER_PUBLIC__ __attribute__((visibility("hidden")))
 
 extern "C" {
 
@@ -96,7 +96,11 @@ _Unwind_Ptr __loader_dl_unwind_find_exidx(_Unwind_Ptr pc, int* pcount) __LINKER_
 
 static pthread_mutex_t g_dl_mutex = PTHREAD_RECURSIVE_MUTEX_INITIALIZER_NP;
 #define __BIONIC_DLERROR_BUFFER_SIZE 512
+#if defined(__aarch64__)
+struct alignas(64) android_pthread_internal {
+#else
 struct android_pthread_internal {
+#endif
   char * current_dlerror;
   char dlerror_buffer[__BIONIC_DLERROR_BUFFER_SIZE];
 };

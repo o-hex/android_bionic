@@ -2075,11 +2075,9 @@ void increment_dso_handle_reference_counter(void* dso_handle) {
     if (si != nullptr) {
       ProtectedDataGuard guard;
       si->increment_ref_count();
-    } else {
-      async_safe_fatal(
-          "increment_dso_handle_reference_counter: Couldn't find soinfo by dso_handle=%p",
-          dso_handle);
     }
+    // If si == nullptr, this dso_handle belongs to the host process or system
+    // libraries. We still record it so reference counting matches decrement calls.
     g_dso_handle_counters[dso_handle] = 1U;
   }
 }
@@ -2090,7 +2088,9 @@ void decrement_dso_handle_reference_counter(void* dso_handle) {
   }
 
   auto it = g_dso_handle_counters.find(dso_handle);
-  CHECK(it != g_dso_handle_counters.end());
+  if (it == g_dso_handle_counters.end()) {
+    return;
+  }
   CHECK(it->second != 0);
 
   if (--it->second == 0) {
@@ -2098,10 +2098,6 @@ void decrement_dso_handle_reference_counter(void* dso_handle) {
     if (si != nullptr) {
       ProtectedDataGuard guard;
       soinfo_unload(si);
-    } else {
-      async_safe_fatal(
-          "decrement_dso_handle_reference_counter: Couldn't find soinfo by dso_handle=%p",
-          dso_handle);
     }
     g_dso_handle_counters.erase(it);
   }
